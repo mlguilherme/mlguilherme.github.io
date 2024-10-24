@@ -7,15 +7,15 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
+            padding: 0;
             background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        #game-container {
+        .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -26,6 +26,7 @@
             animation: fadeIn 1s ease-in-out;
             width: 90%;
             max-width: 600px;
+            margin: 20px auto;
         }
         h1 {
             color: #333;
@@ -40,7 +41,7 @@
             margin-bottom: 20px;
             width: 100%;
         }
-        .letter {
+        td {
             width: 100%;
             padding-top: 100%;
             position: relative;
@@ -56,13 +57,13 @@
             background-color: #fafafa;
             border-radius: 5px;
         }
-        .letter span {
+        td span {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
-        .letter:hover {
+        td:hover {
             background-color: #e0e0e0;
             transform: scale(1.1);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -71,18 +72,18 @@
             background-color: #ffeb3b;
             border: 3px solid rgb(255, 235, 59);
         }
-        .correct {
-            color: #fff;
-            cursor: default;
-        }
-        .highlight {
-            border: 3px solid #ffeb3b;
-        }
-        .word-found {
-            text-decoration: line-through;
+        .found-word {
             color: #4caf50;
+            text-decoration: line-through;
         }
-        #new-game {
+        #win-message {
+            display: none;
+            margin-top: 1em;
+            color: green;
+            font-weight: bold;
+            animation: fadeIn 1s ease-in-out;
+        }
+        #new-game-button {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
@@ -92,34 +93,28 @@
             border-radius: 5px;
             transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
         }
-        #new-game:hover {
+        #new-game-button:hover {
             background-color: #0056b3;
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
         }
-        #animation {
-            display: none;
-            margin-top: 20px;
-            font-size: 18px;
-            color: green;
-        }
-        #word-list {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #555;
+        #word-list-text {
             text-align: center;
+            margin-bottom: 1em;
+            color: #555;
+            font-size: 18px;
         }
         @media (max-width: 600px) {
             h1 {
                 font-size: 20px;
             }
-            .letter {
-                font-size: 6vw;
+            td {
+                font-size: 4vw;
             }
-            #new-game {
+            #new-game-button {
                 font-size: 14px;
             }
-            #animation {
+            #word-list-text {
                 font-size: 16px;
             }
         }
@@ -130,36 +125,22 @@
     </style>
 </head>
 <body>
-    <div id="game-container">
+    <div class="game-container">
         <h1>Sopa de Letras</h1>
-        <div id="word-list"></div>
-        <div id="word-search"></div>
-        <button id="new-game">Novo Jogo</button>
-        <div id="animation">Parabéns! Você encontrou todas as palavras!</div>
+        <p id="word-list-text"></p>
+        <table id="word-search"></table>
+        <button id="new-game-button">Novo Jogo</button>
+        <div id="win-message">Parabéns! Você encontrou todas as palavras!</div>
     </div>
     <script>
         const allWords = [
             'CÃO', 'GATO', 'PÁSSARO', 'PEIXE', 'CARRO', 'MOTA', 'BICICLETA', 'CAMIÃO',
             'MAÇÃ', 'BANANA', 'LARANJA', 'UVA', 'PORTUGAL', 'ESPANHA', 'FRANÇA', 'ALEMANHA',
-            'COMPUTADOR', 'TECLADO', 'RATO', 'MONITOR', 'CASA', 'APARTAMENTO', 'JANELA', 'PORTA',
-            'ESCOLA', 'PROFESSOR', 'ALUNO', 'LIVRO', 'SOL', 'LUA', 'ESTRELA', 'PLANETA',
-            'VERMELHO', 'AZUL', 'VERDE', 'AMARELO', 'CACHOEIRA', 'RIO', 'LAGO', 'MAR',
-            'PIZZA', 'HAMBÚRGUER', 'SALADA', 'SOPA', 'TELEMÓVEL', 'TABLET', 'PORTÁTIL',
-            'GUITARRA', 'PIANO', 'BATERIA', 'VIOLINO', 'FUTEBOL', 'BASQUETEBOL', 'TÉNIS', 'VOLEIBOL',
-            'INVERNO', 'VERÃO', 'OUTONO', 'PRIMAVERA', 'CARNE', 'FRANGO', 'PEIXE', 'PORCO',
-            'CINEMA', 'TEATRO', 'CONCERTO', 'ESPETÁCULO', 'AVIÃO', 'COMBOIO', 'BARCO', 'AUTOCARRO',
-            'CAFÉ', 'CHÁ', 'SUMO', 'ÁGUA', 'MONTANHA', 'VALE', 'DESERTO', 'FLORESTA',
-            'GESTÃO', 'CONTABILIDADE', 'FINANÇAS', 'ORÇAMENTO', 'INVESTIMENTO', 'LUCRO', 'PERDA', 'BALANÇO',
-            'EMOÇÃO', 'FELICIDADE', 'TRISTEZA', 'RAIVA', 'MEDO', 'SURPRESA', 'NOJO', 'AMOR',
-            'CAVALO', 'VACA', 'OVELHA', 'CABRA', 'GALINHA', 'PATO', 'GANSO', 'COELHO',
-            'ELEFANTE', 'LEÃO', 'TIGRE', 'URSO', 'LOBO', 'RAPOSA', 'CANGURU', 'GIRAFA',
-            'COMIDA', 'BEBIDA', 'FRUTA', 'LEGUME', 'DOCE', 'SALGADO', 'PICANTE', 'AMARGO',
-            'MÚSICA', 'DANÇA', 'PINTURA', 'ESCULTURA', 'TEATRO', 'CINEMA', 'LITERATURA', 'POESIA',
-            'CIÊNCIA', 'TECNOLOGIA', 'ENGENHARIA', 'MATEMÁTICA', 'FÍSICA', 'QUÍMICA', 'BIOLOGIA', 'ASTRONOMIA',
-            'POLÍTICA', 'ECONOMIA', 'SOCIOLOGIA', 'PSICOLOGIA', 'FILOSOFIA', 'HISTÓRIA', 'GEOGRAFIA', 'ANTROPOLOGIA',
-            'JARDIM', 'PARQUE', 'PRAIA', 'MONTANHA', 'RIO', 'LAGO', 'FLORESTA', 'DESERTO',
-            'VERDADE', 'MENTIRA', 'HONESTIDADE', 'ENGANO', 'LEALDADE', 'TRAIDOR', 'AMIZADE', 'INIMIZADE',
-            'TRABALHO', 'DESCANSO', 'LAZER', 'ESFORÇO', 'SUCESSO', 'FRACASSO', 'DEDICAÇÃO', 'PREGUIÇA'
+            'CAVALO', 'ELEFANTE', 'TIGRE', 'LEÃO', 'URSO', 'COELHO', 'RATO', 'CROCODILO',
+            'TARTARUGA', 'GIRAFA', 'HIPOPÓTAMO', 'ZEBRA', 'CANGURU', 'PANDA', 'GOLFINHO',
+            'TUBARÃO', 'BALEIA', 'POLVO', 'LULA', 'ESTRELA', 'SOL', 'LUA', 'PLANETA',
+            'GALÁXIA', 'COMETA', 'ASTRONAUTA', 'FUTEBOL', 'BASQUETEBOL', 'TÊNIS', 'VOLEIBOL',
+            'NATAÇÃO', 'CICLISMO', 'ATLETISMO', 'GOLFE'
         ];
         const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#A133FF", "#33FFF5", "#F5FF33", "#FF8C33"];
         const gridSize = 10;
@@ -178,11 +159,11 @@
             fillEmptyCells();
             renderGrid();
             renderWordList();
-            document.getElementById('animation').style.display = 'none';
+            document.getElementById('win-message').style.display = 'none';
         }
 
         function selectRandomWords() {
-            while (selectedWords.length < 8) {
+            while (selectedWords.length < 5) {
                 const word = allWords[Math.floor(Math.random() * allWords.length)];
                 if (!selectedWords.includes(word)) {
                     selectedWords.push(word);
@@ -237,37 +218,42 @@
         }
 
         function renderGrid() {
-            const wordSearch = document.getElementById('word-search');
-            wordSearch.innerHTML = '';
-            grid.forEach((row, rowIndex) => {
-                row.forEach((cell, colIndex) => {
-                    const div = document.createElement('div');
-                    div.className = 'letter';
-                    div.innerHTML = `<span>${cell}</span>`;
-                    div.addEventListener('click', () => handleCellClick(rowIndex, colIndex));
-                    wordSearch.appendChild(div);
+            const table = document.getElementById('word-search');
+            table.innerHTML = '';
+            grid.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.innerHTML = `<span>${cell}</span>`;
+                    tr.appendChild(td);
                 });
+                table.appendChild(tr);
             });
         }
 
         function renderWordList() {
-            const wordList = document.getElementById('word-list');
-            wordList.innerHTML = selectedWords.map(word => 
-                foundWords.includes(word) ? `<span class="word-found">${word}</span>` : word
+            const wordListText = document.getElementById('word-list-text');
+            wordListText.innerHTML = selectedWords.map(word => 
+                foundWords.includes(word) ? `<span class="found-word">${word}</span>` : word
             ).join(', ');
         }
 
         let firstCell = null;
         let lastCell = null;
 
-        function handleCellClick(row, col) {
-            const cell = document.querySelector(`#word-search > div:nth-child(${row * gridSize + col + 1})`);
+        document.getElementById('word-search').addEventListener('click', event => {
+            if (event.target.tagName === 'TD' || event.target.tagName === 'SPAN') {
+                handleCellClick(event.target.closest('td'));
+            }
+        });
+
+        function handleCellClick(cell) {
             if (!firstCell) {
-                firstCell = { row, col, cell };
-                cell.classList.add('selected');
+                firstCell = cell;
+                firstCell.classList.add('selected');
             } else if (!lastCell) {
-                if (isValidSelection(firstCell, { row, col })) {
-                    lastCell = { row, col, cell };
+                if (isValidSelection(firstCell, cell)) {
+                    lastCell = cell;
                     const word = getSelectedWord(firstCell, lastCell);
                     if (selectedWords.includes(word)) {
                         const color = getUniqueColor();
@@ -283,19 +269,27 @@
             }
         }
 
-        function isValidSelection(first, second) {
-            const rowDiff = Math.abs(second.row - first.row);
-            const colDiff = Math.abs(second.col - first.col);
+        function isValidSelection(firstCell, secondCell) {
+            const firstRow = firstCell.parentElement.rowIndex;
+            const firstCol = firstCell.cellIndex;
+            const secondRow = secondCell.parentElement.rowIndex;
+            const secondCol = secondCell.cellIndex;
+            const rowDiff = Math.abs(secondRow - firstRow);
+            const colDiff = Math.abs(secondCol - firstCol);
             return rowDiff === 0 || colDiff === 0 || rowDiff === colDiff;
         }
 
-        function getSelectedWord(first, last) {
+        function getSelectedWord(firstCell, lastCell) {
+            const firstRow = firstCell.parentElement.rowIndex;
+            const firstCol = firstCell.cellIndex;
+            const lastRow = lastCell.parentElement.rowIndex;
+            const lastCol = lastCell.cellIndex;
             const word = [];
-            const rowStep = Math.sign(last.row - first.row);
-            const colStep = Math.sign(last.col - first.col);
-            let row = first.row;
-            let col = first.col;
-            while (row !== last.row + rowStep || col !== last.col + colStep) {
+            const rowStep = Math.sign(lastRow - firstRow);
+            const colStep = Math.sign(lastCol - firstCol);
+            let row = firstRow;
+            let col = firstCol;
+            while (row !== lastRow + rowStep || col !== lastCol + colStep) {
                 word.push(grid[row][col]);
                 row += rowStep;
                 col += colStep;
@@ -303,14 +297,17 @@
             return word.join('');
         }
 
-        function colorWord(first, last, color) {
-            const rowStep = Math.sign(last.row - first.row);
-            const colStep = Math.sign(last.col - first.col);
-            let row = first.row;
-            let col = first.col;
-            while (row !== last.row + rowStep || col !== last.col + colStep) {
-                const cell = document.querySelector(`#word-search > div:nth-child(${row * gridSize + col + 1})`);
-                cell.style.backgroundColor = color;
+        function colorWord(firstCell, lastCell, color) {
+            const firstRow = firstCell.parentElement.rowIndex;
+            const firstCol = firstCell.cellIndex;
+            const lastRow = lastCell.parentElement.rowIndex;
+            const lastCol = lastCell.cellIndex;
+            const rowStep = Math.sign(lastRow - firstRow);
+            const colStep = Math.sign(lastCol - firstCol);
+            let row = firstRow;
+            let col = firstCol;
+            while (row !== lastRow + rowStep || col !== lastCol + colStep) {
+                document.getElementById('word-search').rows[row].cells[col].style.backgroundColor = color;
                 row += rowStep;
                 col += colStep;
             }
@@ -323,7 +320,7 @@
 
         function checkWinCondition() {
             if (selectedWords.length === 0) {
-                document.getElementById('animation').style.display = 'block';
+                document.getElementById('win-message').style.display = 'block';
             }
         }
 
@@ -337,12 +334,12 @@
         }
 
         function resetSelection() {
-            if (firstCell) firstCell.cell.classList.remove('selected');
+            if (firstCell) firstCell.classList.remove('selected');
             firstCell = null;
             lastCell = null;
         }
 
-        document.getElementById('new-game').addEventListener('click', initializeGame);
+        document.getElementById('new-game-button').addEventListener('click', initializeGame);
 
         initializeGame();
     </script>
