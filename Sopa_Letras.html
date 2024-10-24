@@ -13,48 +13,34 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: url('background-pattern.png') repeat; /* Fundo discreto */
             padding: 1em;
         }
         h1 {
             margin-bottom: 1em;
-            color: #333;
             text-align: center;
         }
         .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
             padding: 1em;
-            border-radius: 0.5em;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
         }
         table {
             border-collapse: collapse;
             margin-bottom: 1em;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            border-radius: 0.5em;
-            overflow: hidden;
         }
         td {
-            border: 1px solid #ccc;
-            width: 2.5em;
-            height: 2.5em;
+            border: 1px solid #000;
+            width: 2em;
+            height: 2em;
             text-align: center;
             vertical-align: middle;
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-        }
-        td:hover {
-            background-color: #e0e0e0;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         }
         .selected {
-            border: 2px solid #fff833;
-            box-shadow: 0 0 10px rgba(255, 248, 51, 0.5);
+            border: 2px solid yellow;
         }
         .found-word {
             color: green;
@@ -62,56 +48,20 @@
         }
         #win-message {
             display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 1em;
-            border-radius: 0.5em;
-            text-align: center;
-            z-index: 1000;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-top: 1em;
+            color: green;
         }
         #new-game-button {
             padding: 0.5em 1em;
             font-size: 1em;
             color: white;
-            background-color: #007bff;
+            background-color: blue;
             border: none;
-            border-radius: 0.5em;
             cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        #new-game-button:hover {
-            background-color: #0056b3;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         #word-list-text {
             text-align: center;
             margin-bottom: 1em;
-            max-width: 100%;
-            word-wrap: break-word;
-        }
-        @media (max-width: 600px) {
-            td {
-                width: 1.2em;
-                height: 1.2em;
-                font-size: 0.8em;
-            }
-            #new-game-button {
-                font-size: 0.8em;
-                padding: 0.4em 0.8em;
-            }
-            h1 {
-                font-size: 1.2em;
-            }
-            #win-message {
-                font-size: 0.8em;
-                padding: 0.8em;
-            }
         }
     </style>
 </head>
@@ -126,26 +76,7 @@
     <script>
         const allWords = [
             'CÃO', 'GATO', 'PÁSSARO', 'PEIXE', 'CARRO', 'MOTA', 'BICICLETA', 'CAMIÃO',
-            'MAÇÃ', 'BANANA', 'LARANJA', 'UVA', 'PORTUGAL', 'ESPANHA', 'FRANÇA', 'ALEMANHA',
-            'COMPUTADOR', 'TECLADO', 'RATO', 'MONITOR', 'CASA', 'APARTAMENTO', 'JANELA', 'PORTA',
-            'ESCOLA', 'PROFESSOR', 'ALUNO', 'LIVRO', 'SOL', 'LUA', 'ESTRELA', 'PLANETA',
-            'VERMELHO', 'AZUL', 'VERDE', 'AMARELO', 'CACHOEIRA', 'RIO', 'LAGO', 'MAR',
-            'PIZZA', 'HAMBÚRGUER', 'SALADA', 'SOPA', 'TELEMÓVEL', 'TABLET', 'PORTÁTIL',
-            'GUITARRA', 'PIANO', 'BATERIA', 'VIOLINO', 'FUTEBOL', 'BASQUETEBOL', 'TÉNIS', 'VOLEIBOL',
-            'INVERNO', 'VERÃO', 'OUTONO', 'PRIMAVERA', 'CARNE', 'FRANGO', 'PEIXE', 'PORCO',
-            'CINEMA', 'TEATRO', 'CONCERTO', 'ESPETÁCULO', 'AVIÃO', 'COMBOIO', 'BARCO', 'AUTOCARRO',
-            'CAFÉ', 'CHÁ', 'SUMO', 'ÁGUA', 'MONTANHA', 'VALE', 'DESERTO', 'FLORESTA',
-            'GESTÃO', 'CONTABILIDADE', 'FINANÇAS', 'ORÇAMENTO', 'INVESTIMENTO', 'LUCRO', 'PERDA', 'BALANÇO',
-            'EMOÇÃO', 'FELICIDADE', 'TRISTEZA', 'RAIVA', 'MEDO', 'SURPRESA', 'NOJO', 'AMOR',
-            'CAVALO', 'VACA', 'OVELHA', 'CABRA', 'GALINHA', 'PATO', 'GANSO', 'COELHO',
-            'ELEFANTE', 'LEÃO', 'TIGRE', 'URSO', 'LOBO', 'RAPOSA', 'CANGURU', 'GIRAFA',
-            'COMIDA', 'BEBIDA', 'FRUTA', 'LEGUME', 'DOCE', 'SALGADO', 'PICANTE', 'AMARGO',
-            'MÚSICA', 'DANÇA', 'PINTURA', 'ESCULTURA', 'TEATRO', 'CINEMA', 'LITERATURA', 'POESIA',
-            'CIÊNCIA', 'TECNOLOGIA', 'ENGENHARIA', 'MATEMÁTICA', 'FÍSICA', 'QUÍMICA', 'BIOLOGIA', 'ASTRONOMIA',
-            'POLÍTICA', 'ECONOMIA', 'SOCIOLOGIA', 'PSICOLOGIA', 'FILOSOFIA', 'HISTÓRIA', 'GEOGRAFIA', 'ANTROPOLOGIA',
-            'JARDIM', 'PARQUE', 'PRAIA', 'MONTANHA', 'RIO', 'LAGO', 'FLORESTA', 'DESERTO',
-            'VERDADE', 'MENTIRA', 'HONESTIDADE', 'ENGANO', 'LEALDADE', 'TRAIDOR', 'AMIZADE', 'INIMIZADE',
-            'TRABALHO', 'DESCANSO', 'LAZER', 'ESFORÇO', 'SUCESSO', 'FRACASSO', 'DEDICAÇÃO', 'PREGUIÇA'
+            'MAÇÃ', 'BANANA', 'LARANJA', 'UVA', 'PORTUGAL', 'ESPANHA', 'FRANÇA', 'ALEMANHA'
         ];
         const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#A133FF", "#33FFF5", "#F5FF33", "#FF8C33"];
         const gridSize = 10;
@@ -168,7 +99,7 @@
         }
 
         function selectRandomWords() {
-            while (selectedWords.length < 8) {
+            while (selectedWords.length < 5) {
                 const word = allWords[Math.floor(Math.random() * allWords.length)];
                 if (!selectedWords.includes(word)) {
                     selectedWords.push(word);
