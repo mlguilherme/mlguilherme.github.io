@@ -267,6 +267,7 @@
         let isPaused = false;
         let timeUp = false;
         let lastAnimation = '';
+        let winAnimationTimeout;
 
         document.getElementById('newGameButton').addEventListener('click', handleNewGamePlay);
         document.getElementById('stopButton').addEventListener('click', stopTimer);
@@ -324,6 +325,8 @@
         }
 
         function handleNewGamePlay() {
+            removeAnimations();
+            clearTimeout(winAnimationTimeout);
             if (timeUp) {
                 startGame();
             } else if (isPaused) {
@@ -388,7 +391,7 @@
             resetBoard();
             if (matchedPairs === currentImages.length) {
                 clearInterval(timerInterval);
-                setTimeout(() => {
+                winAnimationTimeout = setTimeout(() => {
                     const winAnimations = ['animated-rocket', 'animated-burst', 'animated-spin', 'animated-bounce', 'animated-shake', 'animated-flash'];
                     let randomAnimation;
                     do {
@@ -396,11 +399,12 @@
                     } while (randomAnimation === lastAnimation);
                     lastAnimation = randomAnimation;
                     document.querySelectorAll('.card').forEach(card => card.classList.add(randomAnimation));
-                    setTimeout(() => {
+                    winAnimationTimeout = setTimeout(() => {
                         document.querySelectorAll('.card').forEach(card => {
                             card.classList.remove('animated-rocket', 'animated-burst', 'animated-spin', 'animated-bounce', 'animated-shake', 'animated-flash');
                         });
-                        startGame(); // Reiniciar o jogo automaticamente após a animação
+                        // Desabilitar o contador de reinício automático
+                        winAnimationTimeout = null;
                     }, 11000);
                 }, 500);
             }
@@ -418,6 +422,12 @@
 
         function resetBoard() {
             [firstCard, secondCard, lockBoard] = [null, null, false];
+        }
+
+        function removeAnimations() {
+            document.querySelectorAll('.card').forEach(card => {
+                card.classList.remove('animated-rocket', 'animated-burst', 'animated-spin', 'animated-bounce', 'animated-shake', 'animated-flash');
+            });
         }
     </script>
 </body>
