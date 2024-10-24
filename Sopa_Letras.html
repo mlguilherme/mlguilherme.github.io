@@ -6,51 +6,74 @@
     <title>Sopa de Letras</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #f0f0f0;
-        }
-        h1 {
-            margin-bottom: 1em;
-            text-align: center;
-            color: #333;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .game-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2em;
-            border: 1px solid #ccc;
             background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-in-out;
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
         }
-        table {
-            border-collapse: collapse;
-            margin-bottom: 1em;
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 24px;
+        }
+        #word-search {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-gap: 5px;
+            margin-bottom: 20px;
+            width: 100%;
         }
         td {
-            border: 1px solid #ddd;
-            width: 2em;
-            height: 2em;
-            text-align: center;
-            vertical-align: middle;
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            font-size: 2vw;
+            font-weight: bold;
+            color: #333;
+            background-color: #fafafa;
+            border-radius: 5px;
+        }
+        td span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         td:hover {
-            background-color: #f1f1f1;
+            background-color: #e0e0e0;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .selected {
-            border: 2px solid yellow;
+            background-color: #ffeb3b;
+            border: 3px solid rgb(255, 235, 59);
         }
         .found-word {
-            color: green;
+            color: #4caf50;
             text-decoration: line-through;
         }
         #win-message {
@@ -58,24 +81,46 @@
             margin-top: 1em;
             color: green;
             font-weight: bold;
+            animation: fadeIn 1s ease-in-out;
         }
         #new-game-button {
-            padding: 0.5em 1em;
-            font-size: 1em;
-            color: white;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
         }
         #new-game-button:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
         }
         #word-list-text {
             text-align: center;
             margin-bottom: 1em;
             color: #555;
+            font-size: 18px;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 20px;
+            }
+            td {
+                font-size: 4vw;
+            }
+            #new-game-button {
+                font-size: 14px;
+            }
+            #word-list-text {
+                font-size: 16px;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -174,7 +219,7 @@
                 const tr = document.createElement('tr');
                 row.forEach(cell => {
                     const td = document.createElement('td');
-                    td.textContent = cell;
+                    td.innerHTML = `<span>${cell}</span>`;
                     tr.appendChild(td);
                 });
                 table.appendChild(tr);
@@ -192,8 +237,8 @@
         let lastCell = null;
 
         document.getElementById('word-search').addEventListener('click', event => {
-            if (event.target.tagName === 'TD') {
-                handleCellClick(event.target);
+            if (event.target.tagName === 'TD' || event.target.tagName === 'SPAN') {
+                handleCellClick(event.target.closest('td'));
             }
         });
 
